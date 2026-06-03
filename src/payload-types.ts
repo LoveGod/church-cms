@@ -69,7 +69,16 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    staff: Staff;
+    'sermon-series': SermonSery;
+    sermons: Sermon;
+    events: Event;
+    topics: Topic;
+    tags: Tag;
+    'landing-pages': LandingPage;
+    'legal-pages': LegalPage;
     'payload-kv': PayloadKv;
+    'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -78,24 +87,49 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    staff: StaffSelect<false> | StaffSelect<true>;
+    'sermon-series': SermonSeriesSelect<false> | SermonSeriesSelect<true>;
+    sermons: SermonsSelect<false> | SermonsSelect<true>;
+    events: EventsSelect<false> | EventsSelect<true>;
+    topics: TopicsSelect<false> | TopicsSelect<true>;
+    tags: TagsSelect<false> | TagsSelect<true>;
+    'landing-pages': LandingPagesSelect<false> | LandingPagesSelect<true>;
+    'legal-pages': LegalPagesSelect<false> | LegalPagesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
+    'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
-    defaultIDType: number;
+    defaultIDType: string;
   };
-  fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
-  locale: null;
+  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('en' | 'de') | ('en' | 'de')[];
+  globals: {
+    'homepage-layout': HomepageLayout;
+    'global-settings': GlobalSetting;
+    navigation: Navigation;
+    footer: Footer;
+  };
+  globalsSelect: {
+    'homepage-layout': HomepageLayoutSelect<false> | HomepageLayoutSelect<true>;
+    'global-settings': GlobalSettingsSelect<false> | GlobalSettingsSelect<true>;
+    navigation: NavigationSelect<false> | NavigationSelect<true>;
+    footer: FooterSelect<false> | FooterSelect<true>;
+  };
+  locale: 'en' | 'de';
   widgets: {
     collections: CollectionsWidget;
   };
   user: User;
   jobs: {
-    tasks: unknown;
+    tasks: {
+      schedulePublish: TaskSchedulePublish;
+      inline: {
+        input: unknown;
+        output: unknown;
+      };
+    };
     workflows: unknown;
   };
 }
@@ -122,7 +156,7 @@ export interface UserAuthOperations {
  * via the `definition` "users".
  */
 export interface User {
-  id: number;
+  id: string;
   firstName?: string | null;
   lastName?: string | null;
   role: 'admin' | 'user' | 'editor';
@@ -150,8 +184,11 @@ export interface User {
  * via the `definition` "media".
  */
 export interface Media {
-  id: number;
+  id: string;
   alt: string;
+  caption?: string | null;
+  credit?: string | null;
+  focusKeyword?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -192,10 +229,447 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "staff".
+ */
+export interface Staff {
+  id: string;
+  name: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  role?: string | null;
+  bio?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  photo?: (string | null) | Media;
+  email?: string | null;
+  socialLinks?:
+    | {
+        platform?: ('Instagram' | 'Facebook' | 'YouTube' | 'LinkedIn' | 'Website') | null;
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sermon-series".
+ */
+export interface SermonSery {
+  id: string;
+  title: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  coverImage?: (string | null) | Media;
+  startDate?: string | null;
+  endDate?: string | null;
+  seo?: {
+    metaTitle?: string | null;
+    metaDescription?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sermons".
+ */
+export interface Sermon {
+  id: string;
+  title: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  excerpt?: string | null;
+  publishedDate: string;
+  speaker: string | Staff;
+  series?: (string | null) | SermonSery;
+  featuredImage?: (string | null) | Media;
+  videoUrl?: string | null;
+  audioUrl?: string | null;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  notes?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  transcript?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  scriptureReferences?:
+    | {
+        book: string;
+        chapter: number;
+        verseStart: number;
+        verseEnd?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  topics?: (string | Topic)[] | null;
+  tags?: (string | Tag)[] | null;
+  seo?: {
+    metaTitle?: string | null;
+    metaDescription?: string | null;
+    ogImage?: (string | null) | Media;
+  };
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "topics".
+ */
+export interface Topic {
+  id: string;
+  title: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  description?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags".
+ */
+export interface Tag {
+  id: string;
+  title: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events".
+ */
+export interface Event {
+  id: string;
+  title: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  excerpt?: string | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  featuredImage?: (string | null) | Media;
+  startDate: string;
+  endDate?: string | null;
+  allDay?: boolean | null;
+  location?: {
+    name?: string | null;
+    address?: string | null;
+    googleMapsUrl?: string | null;
+  };
+  registrationUrl?: string | null;
+  recurring?: {
+    enabled?: boolean | null;
+    frequency?: ('daily' | 'weekly' | 'monthly') | null;
+  };
+  seo?: {
+    metaTitle?: string | null;
+    metaDescription?: string | null;
+    ogImage?: (string | null) | Media;
+  };
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "landing-pages".
+ */
+export interface LandingPage {
+  id: string;
+  title: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  hero?:
+    | {
+        headline: string;
+        subline?: string | null;
+        variant: 'image' | 'video' | 'centered';
+        image?: (string | null) | Media;
+        videoUrl?: string | null;
+        primaryCta: {
+          label: string;
+          linkType: 'internal' | 'external';
+          internalLink?:
+            | ({
+                relationTo: 'landing-pages';
+                value: string | LandingPage;
+              } | null)
+            | ({
+                relationTo: 'events';
+                value: string | Event;
+              } | null)
+            | ({
+                relationTo: 'sermons';
+                value: string | Sermon;
+              } | null);
+          externalUrl?: string | null;
+        };
+        secondaryCta: {
+          label: string;
+          linkType: 'internal' | 'external';
+          internalLink?:
+            | ({
+                relationTo: 'landing-pages';
+                value: string | LandingPage;
+              } | null)
+            | ({
+                relationTo: 'events';
+                value: string | Event;
+              } | null)
+            | ({
+                relationTo: 'sermons';
+                value: string | Sermon;
+              } | null);
+          externalUrl?: string | null;
+        };
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'hero';
+      }[]
+    | null;
+  layout: (
+    | {
+        heading: string;
+        body?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        background: 'default' | 'muted' | 'primary' | 'image';
+        backgroundImage?: (string | null) | Media;
+        buttons?:
+          | {
+              label: string;
+              linkType: 'internal' | 'external';
+              internalLink?:
+                | ({
+                    relationTo: 'landing-pages';
+                    value: string | LandingPage;
+                  } | null)
+                | ({
+                    relationTo: 'events';
+                    value: string | Event;
+                  } | null)
+                | ({
+                    relationTo: 'sermons';
+                    value: string | Sermon;
+                  } | null);
+              externalUrl?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'cta';
+      }
+    | {
+        verseText: string;
+        reference: string;
+        translation: 'LUT' | 'ELB' | 'HFA' | 'NGÜ' | 'SLT' | 'NIV' | 'ESV' | 'KJV';
+        attribution?: string | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'scriptureQuote';
+      }
+    | {
+        content: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        width: 'narrow' | 'default' | 'wide';
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'richText';
+      }
+    | {
+        heading: string;
+        description?: string | null;
+        sermons: (string | Sermon)[];
+        layout: 'grid' | 'list' | 'carousel';
+        showSeries?: boolean | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'sermonHighlight';
+      }
+    | {
+        heading: string;
+        description?: string | null;
+        events: (string | Event)[];
+        layout: 'grid' | 'list' | 'featured';
+        showLocation?: boolean | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'eventHighlight';
+      }
+  )[];
+  metaTitle?: string | null;
+  metaDescription?: string | null;
+  ogImage?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "legal-pages".
+ */
+export interface LegalPage {
+  id: string;
+  title: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  pageType: 'impressum' | 'privacy-policy' | 'cookie-policy';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
-  id: number;
+  id: string;
   key: string;
   data:
     | {
@@ -209,23 +683,147 @@ export interface PayloadKv {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs".
+ */
+export interface PayloadJob {
+  id: string;
+  /**
+   * Input data provided to the job
+   */
+  input?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  taskStatus?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  completedAt?: string | null;
+  totalTried?: number | null;
+  /**
+   * If hasError is true this job will not be retried
+   */
+  hasError?: boolean | null;
+  /**
+   * If hasError is true, this is the error that caused it
+   */
+  error?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Task execution log
+   */
+  log?:
+    | {
+        executedAt: string;
+        completedAt: string;
+        taskSlug: 'inline' | 'schedulePublish';
+        taskID: string;
+        input?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        output?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        state: 'failed' | 'succeeded';
+        error?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  taskSlug?: ('inline' | 'schedulePublish') | null;
+  queue?: string | null;
+  waitUntil?: string | null;
+  processing?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
-  id: number;
+  id: string;
   document?:
     | ({
         relationTo: 'users';
-        value: number | User;
+        value: string | User;
       } | null)
     | ({
         relationTo: 'media';
-        value: number | Media;
+        value: string | Media;
+      } | null)
+    | ({
+        relationTo: 'staff';
+        value: string | Staff;
+      } | null)
+    | ({
+        relationTo: 'sermon-series';
+        value: string | SermonSery;
+      } | null)
+    | ({
+        relationTo: 'sermons';
+        value: string | Sermon;
+      } | null)
+    | ({
+        relationTo: 'events';
+        value: string | Event;
+      } | null)
+    | ({
+        relationTo: 'topics';
+        value: string | Topic;
+      } | null)
+    | ({
+        relationTo: 'tags';
+        value: string | Tag;
+      } | null)
+    | ({
+        relationTo: 'landing-pages';
+        value: string | LandingPage;
+      } | null)
+    | ({
+        relationTo: 'legal-pages';
+        value: string | LegalPage;
       } | null);
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
-    value: number | User;
+    value: string | User;
   };
   updatedAt: string;
   createdAt: string;
@@ -235,10 +833,10 @@ export interface PayloadLockedDocument {
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: number;
+  id: string;
   user: {
     relationTo: 'users';
-    value: number | User;
+    value: string | User;
   };
   key?: string | null;
   value?:
@@ -258,7 +856,7 @@ export interface PayloadPreference {
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: number;
+  id: string;
   name?: string | null;
   batch?: number | null;
   updatedAt: string;
@@ -295,6 +893,9 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  caption?: T;
+  credit?: T;
+  focusKeyword?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -343,11 +944,309 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "staff_select".
+ */
+export interface StaffSelect<T extends boolean = true> {
+  name?: T;
+  generateSlug?: T;
+  slug?: T;
+  role?: T;
+  bio?: T;
+  photo?: T;
+  email?: T;
+  socialLinks?:
+    | T
+    | {
+        platform?: T;
+        url?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sermon-series_select".
+ */
+export interface SermonSeriesSelect<T extends boolean = true> {
+  title?: T;
+  generateSlug?: T;
+  slug?: T;
+  description?: T;
+  coverImage?: T;
+  startDate?: T;
+  endDate?: T;
+  seo?:
+    | T
+    | {
+        metaTitle?: T;
+        metaDescription?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sermons_select".
+ */
+export interface SermonsSelect<T extends boolean = true> {
+  title?: T;
+  generateSlug?: T;
+  slug?: T;
+  excerpt?: T;
+  publishedDate?: T;
+  speaker?: T;
+  series?: T;
+  featuredImage?: T;
+  videoUrl?: T;
+  audioUrl?: T;
+  content?: T;
+  notes?: T;
+  transcript?: T;
+  scriptureReferences?:
+    | T
+    | {
+        book?: T;
+        chapter?: T;
+        verseStart?: T;
+        verseEnd?: T;
+        id?: T;
+      };
+  topics?: T;
+  tags?: T;
+  seo?:
+    | T
+    | {
+        metaTitle?: T;
+        metaDescription?: T;
+        ogImage?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events_select".
+ */
+export interface EventsSelect<T extends boolean = true> {
+  title?: T;
+  generateSlug?: T;
+  slug?: T;
+  excerpt?: T;
+  content?: T;
+  featuredImage?: T;
+  startDate?: T;
+  endDate?: T;
+  allDay?: T;
+  location?:
+    | T
+    | {
+        name?: T;
+        address?: T;
+        googleMapsUrl?: T;
+      };
+  registrationUrl?: T;
+  recurring?:
+    | T
+    | {
+        enabled?: T;
+        frequency?: T;
+      };
+  seo?:
+    | T
+    | {
+        metaTitle?: T;
+        metaDescription?: T;
+        ogImage?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "topics_select".
+ */
+export interface TopicsSelect<T extends boolean = true> {
+  title?: T;
+  generateSlug?: T;
+  slug?: T;
+  description?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags_select".
+ */
+export interface TagsSelect<T extends boolean = true> {
+  title?: T;
+  generateSlug?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "landing-pages_select".
+ */
+export interface LandingPagesSelect<T extends boolean = true> {
+  title?: T;
+  generateSlug?: T;
+  slug?: T;
+  hero?:
+    | T
+    | {
+        hero?:
+          | T
+          | {
+              headline?: T;
+              subline?: T;
+              variant?: T;
+              image?: T;
+              videoUrl?: T;
+              primaryCta?:
+                | T
+                | {
+                    label?: T;
+                    linkType?: T;
+                    internalLink?: T;
+                    externalUrl?: T;
+                  };
+              secondaryCta?:
+                | T
+                | {
+                    label?: T;
+                    linkType?: T;
+                    internalLink?: T;
+                    externalUrl?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+      };
+  layout?:
+    | T
+    | {
+        cta?:
+          | T
+          | {
+              heading?: T;
+              body?: T;
+              background?: T;
+              backgroundImage?: T;
+              buttons?:
+                | T
+                | {
+                    label?: T;
+                    linkType?: T;
+                    internalLink?: T;
+                    externalUrl?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        scriptureQuote?:
+          | T
+          | {
+              verseText?: T;
+              reference?: T;
+              translation?: T;
+              attribution?: T;
+              id?: T;
+              blockName?: T;
+            };
+        richText?:
+          | T
+          | {
+              content?: T;
+              width?: T;
+              id?: T;
+              blockName?: T;
+            };
+        sermonHighlight?:
+          | T
+          | {
+              heading?: T;
+              description?: T;
+              sermons?: T;
+              layout?: T;
+              showSeries?: T;
+              id?: T;
+              blockName?: T;
+            };
+        eventHighlight?:
+          | T
+          | {
+              heading?: T;
+              description?: T;
+              events?: T;
+              layout?: T;
+              showLocation?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
+  metaTitle?: T;
+  metaDescription?: T;
+  ogImage?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "legal-pages_select".
+ */
+export interface LegalPagesSelect<T extends boolean = true> {
+  title?: T;
+  generateSlug?: T;
+  slug?: T;
+  content?: T;
+  pageType?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
   key?: T;
   data?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs_select".
+ */
+export interface PayloadJobsSelect<T extends boolean = true> {
+  input?: T;
+  taskStatus?: T;
+  completedAt?: T;
+  totalTried?: T;
+  hasError?: T;
+  error?: T;
+  log?:
+    | T
+    | {
+        executedAt?: T;
+        completedAt?: T;
+        taskSlug?: T;
+        taskID?: T;
+        input?: T;
+        output?: T;
+        state?: T;
+        error?: T;
+        id?: T;
+      };
+  taskSlug?: T;
+  queue?: T;
+  waitUntil?: T;
+  processing?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -383,6 +1282,414 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "homepage-layout".
+ */
+export interface HomepageLayout {
+  id: string;
+  heroTitle: string;
+  heroSubtitle?: string | null;
+  heroImage?: (string | null) | Media;
+  sections?:
+    | (
+        | {
+            headline: string;
+            subline?: string | null;
+            variant: 'image' | 'video' | 'centered';
+            image?: (string | null) | Media;
+            videoUrl?: string | null;
+            primaryCta: {
+              label: string;
+              linkType: 'internal' | 'external';
+              internalLink?:
+                | ({
+                    relationTo: 'landing-pages';
+                    value: string | LandingPage;
+                  } | null)
+                | ({
+                    relationTo: 'events';
+                    value: string | Event;
+                  } | null)
+                | ({
+                    relationTo: 'sermons';
+                    value: string | Sermon;
+                  } | null);
+              externalUrl?: string | null;
+            };
+            secondaryCta: {
+              label: string;
+              linkType: 'internal' | 'external';
+              internalLink?:
+                | ({
+                    relationTo: 'landing-pages';
+                    value: string | LandingPage;
+                  } | null)
+                | ({
+                    relationTo: 'events';
+                    value: string | Event;
+                  } | null)
+                | ({
+                    relationTo: 'sermons';
+                    value: string | Sermon;
+                  } | null);
+              externalUrl?: string | null;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'hero';
+          }
+        | {
+            heading: string;
+            body?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            background: 'default' | 'muted' | 'primary' | 'image';
+            backgroundImage?: (string | null) | Media;
+            buttons?:
+              | {
+                  label: string;
+                  linkType: 'internal' | 'external';
+                  internalLink?:
+                    | ({
+                        relationTo: 'landing-pages';
+                        value: string | LandingPage;
+                      } | null)
+                    | ({
+                        relationTo: 'events';
+                        value: string | Event;
+                      } | null)
+                    | ({
+                        relationTo: 'sermons';
+                        value: string | Sermon;
+                      } | null);
+                  externalUrl?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cta';
+          }
+        | {
+            verseText: string;
+            reference: string;
+            translation: 'LUT' | 'ELB' | 'HFA' | 'NGÜ' | 'SLT' | 'NIV' | 'ESV' | 'KJV';
+            attribution?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'scriptureQuote';
+          }
+        | {
+            content: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            width: 'narrow' | 'default' | 'wide';
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'richText';
+          }
+        | {
+            heading: string;
+            description?: string | null;
+            sermons: (string | Sermon)[];
+            layout: 'grid' | 'list' | 'carousel';
+            showSeries?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'sermonHighlight';
+          }
+        | {
+            heading: string;
+            description?: string | null;
+            events: (string | Event)[];
+            layout: 'grid' | 'list' | 'featured';
+            showLocation?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'eventHighlight';
+          }
+      )[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "global-settings".
+ */
+export interface GlobalSetting {
+  id: string;
+  siteName: string;
+  defaultLocale: 'en' | 'de';
+  siteUrl: string;
+  defaultSeoImage?: (string | null) | Media;
+  contactEmail?: string | null;
+  socialLinks?:
+    | {
+        platform?: string | null;
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  announcementBar?: {
+    enabled?: boolean | null;
+    text?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "navigation".
+ */
+export interface Navigation {
+  id: string;
+  items?:
+    | {
+        label: string;
+        url: string;
+        openInNewTab?: boolean | null;
+        children?:
+          | {
+              label?: string | null;
+              url?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "footer".
+ */
+export interface Footer {
+  id: string;
+  logo?: (string | null) | Media;
+  description?: string | null;
+  columns?:
+    | {
+        title?: string | null;
+        links?:
+          | {
+              label?: string | null;
+              url?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  copyright?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "homepage-layout_select".
+ */
+export interface HomepageLayoutSelect<T extends boolean = true> {
+  heroTitle?: T;
+  heroSubtitle?: T;
+  heroImage?: T;
+  sections?:
+    | T
+    | {
+        hero?:
+          | T
+          | {
+              headline?: T;
+              subline?: T;
+              variant?: T;
+              image?: T;
+              videoUrl?: T;
+              primaryCta?:
+                | T
+                | {
+                    label?: T;
+                    linkType?: T;
+                    internalLink?: T;
+                    externalUrl?: T;
+                  };
+              secondaryCta?:
+                | T
+                | {
+                    label?: T;
+                    linkType?: T;
+                    internalLink?: T;
+                    externalUrl?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        cta?:
+          | T
+          | {
+              heading?: T;
+              body?: T;
+              background?: T;
+              backgroundImage?: T;
+              buttons?:
+                | T
+                | {
+                    label?: T;
+                    linkType?: T;
+                    internalLink?: T;
+                    externalUrl?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        scriptureQuote?:
+          | T
+          | {
+              verseText?: T;
+              reference?: T;
+              translation?: T;
+              attribution?: T;
+              id?: T;
+              blockName?: T;
+            };
+        richText?:
+          | T
+          | {
+              content?: T;
+              width?: T;
+              id?: T;
+              blockName?: T;
+            };
+        sermonHighlight?:
+          | T
+          | {
+              heading?: T;
+              description?: T;
+              sermons?: T;
+              layout?: T;
+              showSeries?: T;
+              id?: T;
+              blockName?: T;
+            };
+        eventHighlight?:
+          | T
+          | {
+              heading?: T;
+              description?: T;
+              events?: T;
+              layout?: T;
+              showLocation?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "global-settings_select".
+ */
+export interface GlobalSettingsSelect<T extends boolean = true> {
+  siteName?: T;
+  defaultLocale?: T;
+  siteUrl?: T;
+  defaultSeoImage?: T;
+  contactEmail?: T;
+  socialLinks?:
+    | T
+    | {
+        platform?: T;
+        url?: T;
+        id?: T;
+      };
+  announcementBar?:
+    | T
+    | {
+        enabled?: T;
+        text?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "navigation_select".
+ */
+export interface NavigationSelect<T extends boolean = true> {
+  items?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+        openInNewTab?: T;
+        children?:
+          | T
+          | {
+              label?: T;
+              url?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "footer_select".
+ */
+export interface FooterSelect<T extends boolean = true> {
+  logo?: T;
+  description?: T;
+  columns?:
+    | T
+    | {
+        title?: T;
+        links?:
+          | T
+          | {
+              label?: T;
+              url?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  copyright?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "collections_widget".
  */
 export interface CollectionsWidget {
@@ -390,6 +1697,32 @@ export interface CollectionsWidget {
     [k: string]: unknown;
   };
   width: 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskSchedulePublish".
+ */
+export interface TaskSchedulePublish {
+  input: {
+    type?: ('publish' | 'unpublish') | null;
+    locale?: string | null;
+    doc?:
+      | ({
+          relationTo: 'sermons';
+          value: string | Sermon;
+        } | null)
+      | ({
+          relationTo: 'events';
+          value: string | Event;
+        } | null)
+      | ({
+          relationTo: 'landing-pages';
+          value: string | LandingPage;
+        } | null);
+    global?: string | null;
+    user?: (string | null) | User;
+  };
+  output?: unknown;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

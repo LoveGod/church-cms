@@ -1,4 +1,5 @@
-import { postgresAdapter } from '@payloadcms/db-postgres'
+//import { postgresAdapter } from '@payloadcms/db-postgres'
+import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
 import { buildConfig } from 'payload'
@@ -7,6 +8,18 @@ import sharp from 'sharp'
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
+import { Staff } from './collections/Staff'
+import { SermonSeries } from './collections/SemonSeries'
+import { Sermons } from './collections/Sermons'
+import { Topics } from './collections/Topics'
+import { Tags } from './collections/Tags'
+import { LegalPages } from './collections/pages/LegalPages'
+import { Navigation } from './collections/globals/Navigation'
+import { Footer } from './collections/globals/Footer'
+import { GlobalSettings } from './collections/globals/GlobalSettings'
+import { LandingPages } from './collections/pages/LandingPages'
+import { HomepageLayout } from './collections/globals/HomepageLayout'
+import { Events } from './collections/Events'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -18,16 +31,31 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media],
+  collections: [
+    Users,
+    Media,
+    Staff,
+    SermonSeries,
+    Sermons,
+    Events,
+    Topics,
+    Tags,
+    LandingPages,
+    LegalPages,
+  ],
+  globals: [HomepageLayout, GlobalSettings, Navigation, Footer],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
-  db: postgresAdapter({
+  /*db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
     },
+  }),*/
+  db: mongooseAdapter({
+    url: process.env.DATABASE_URL || '',
   }),
   sharp,
   plugins: [],

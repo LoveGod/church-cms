@@ -9,12 +9,12 @@ export const Users: CollectionConfig = {
   },
   auth: true,
   access: {
-    delete: ({ req: { user } }) => isAdmin({ req: { user } }),
-    update: ({ req: { user } }) => isAdminOrEditor({ req: { user } }),
-    unlock: ({ req: { user } }) => isAdmin({ req: { user } }),
+    delete: (User) => isAdmin(User),
+    update: (User) => isAdminOrEditor(User),
+    unlock: (User) => isAdmin(User),
 
     // Define who can read/update users
-    admin: ({ req: { user } }) => isAdmin({ req: { user } }),
+    admin: (User) => isAdmin(User),
   },
   fields: [
     // Email added by default
@@ -40,7 +40,7 @@ export const Users: CollectionConfig = {
       access: {
         // Only admins can update the role
         read: () => true,
-        update: ({ req: { user } }) => isAdmin({ req: { user } }),
+        update: (User) => isAdmin(User),
       },
     },
   ],

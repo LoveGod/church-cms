@@ -1,19 +1,23 @@
 import type { CollectionConfig } from 'payload'
-import { isAdmin } from './access/admins'
+import { isAuthenticated } from './access/authenticated'
 import { isAdminOrEditor } from './access/adminOrEditor'
 
 export const Media: CollectionConfig = {
   slug: 'media',
+  admin: {
+    useAsTitle: 'alt',
+    group: 'Media',
+  },
   access: {
-    read: () => true,
-    create: ({ req: { user } }) => isAdminOrEditor({ req: { user } }),
-    update: ({ req: { user } }) => isAdminOrEditor({ req: { user } }),
-    delete: ({ req: { user } }) => isAdmin({ req: { user } }),
+    read: (User) => isAuthenticated(User),
+    create: (User) => isAdminOrEditor(User),
+    update: (User) => isAdminOrEditor(User),
+    delete: (User) => isAdminOrEditor(User),
   },
   upload: {
     staticDir: 'media',
     adminThumbnail: 'thumbnail',
-    mimeTypes: ['image/*'],
+    mimeTypes: ['image/*', 'video/*', 'audio/*', 'application/pdf'],
     imageSizes: [
       {
         name: 'thumbnail',
@@ -44,6 +48,24 @@ export const Media: CollectionConfig = {
       name: 'alt',
       type: 'text',
       required: true,
+      localized: true,
+    },
+    {
+      name: 'caption',
+      type: 'textarea',
+      localized: true,
+    },
+
+    {
+      name: 'credit',
+      type: 'text',
+      localized: true,
+    },
+
+    {
+      name: 'focusKeyword',
+      type: 'text',
+      localized: true,
     },
   ],
 }
