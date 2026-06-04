@@ -9,36 +9,46 @@ services:
     working_dir: /home/node/app/
     command: sh -c "corepack enable && corepack prepare pnpm@10 --activate && pnpm install && pnpm dev"
     depends_on:
-      #- mongo
-      - postgres
+      mongo:
+        condition: service_healthy
+      #- postgres
     env_file:
       - .env
 
   # Ensure your DATABASE_URL uses 'mongo' as the hostname ie. mongodb://mongo/my-db-name
-  #mongo:
-  # image: mongo:latest
-  #ports:
-  # - '27017:27017'
-  #command:
-  #  - --storageEngine=wiredTiger
-  #volumes:
-  #  - data:/data/db
+  mongo:
+    image: mongo:latest
+    environment:
+      #MONGO_INITDB_ROOT_USERNAME: admin
+      #MONGO_INITDB_ROOT_PASSWORD: church-cms
+      MONGO_INITDB_DATABASE: church-cms
+    ports:
+      - '27018:27017'
+    command:
+      - --storageEngine=wiredTiger
+    volumes:
+      - data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
   #logging:
-  #  driver: none
+  #driver: none
 
   # Uncomment the following to use postgres
-  postgres:
-    restart: always
-    image: postgres:16
-    environment:
-      POSTGRES_DB: church-cms
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    ports:
-      - '5432:5432'
+  #postgres:
+  #  restart: always
+  #  image: postgres:16
+  #  environment:
+  #    POSTGRES_DB: church-cms
+  #    POSTGRES_USER: postgres
+  #    POSTGRES_PASSWORD: postgres
+  #  volumes:
+  #    - pgdata:/var/lib/postgresql/data
+  #  ports:
+  #    - '5432:5432'
 
 volumes:
-  pgdata:
+  data:
   node_modules:
