@@ -14,6 +14,7 @@ export const Media: CollectionConfig = {
     update: (User) => isAdminOrEditor(User),
     delete: (User) => isAdminOrEditor(User),
   },
+
   upload: {
     staticDir: 'media',
     adminThumbnail: 'thumbnail',

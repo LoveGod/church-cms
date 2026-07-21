@@ -22,6 +22,7 @@ export const Sermons: CollectionConfig = {
     update: (User) => isAdminOrEditor(User),
     delete: (User) => isAdminOrEditor(User),
   },
+
   fields: [
     // -------------------
     // Basic Information

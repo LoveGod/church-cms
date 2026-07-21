@@ -162,6 +162,9 @@ export interface User {
   role: 'admin' | 'user' | 'editor';
   updatedAt: string;
   createdAt: string;
+  enableAPIKey?: boolean | null;
+  apiKey?: string | null;
+  apiKeyIndex?: string | null;
   email: string;
   resetPasswordToken?: string | null;
   resetPasswordExpiration?: string | null;
@@ -625,6 +628,7 @@ export interface LandingPage {
         blockName?: string | null;
         blockType: 'eventHighlight';
       }
+    | SermonFeedBlock
   )[];
   metaTitle?: string | null;
   metaDescription?: string | null;
@@ -632,6 +636,29 @@ export interface LandingPage {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SermonFeedBlock".
+ */
+export interface SermonFeedBlock {
+  heading?: string | null;
+  description?: string | null;
+  mode?: ('recent' | 'featured' | 'series' | 'speaker' | 'topic') | null;
+  series?: (string | null) | SermonSery;
+  speaker?: (string | null) | Staff;
+  topic?: (string | null) | Topic;
+  /**
+   * Number of sermons to display.
+   */
+  limit?: number | null;
+  cta?: {
+    label?: string | null;
+    url?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'sermon-feed';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -872,6 +899,9 @@ export interface UsersSelect<T extends boolean = true> {
   role?: T;
   updatedAt?: T;
   createdAt?: T;
+  enableAPIKey?: T;
+  apiKey?: T;
+  apiKeyIndex?: T;
   email?: T;
   resetPasswordToken?: T;
   resetPasswordExpiration?: T;
@@ -1188,6 +1218,7 @@ export interface LandingPagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        'sermon-feed'?: T | SermonFeedBlockSelect<T>;
       };
   metaTitle?: T;
   metaDescription?: T;
@@ -1195,6 +1226,27 @@ export interface LandingPagesSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SermonFeedBlock_select".
+ */
+export interface SermonFeedBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  mode?: T;
+  series?: T;
+  speaker?: T;
+  topic?: T;
+  limit?: T;
+  cta?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+      };
+  id?: T;
+  blockName?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1431,6 +1483,7 @@ export interface HomepageLayout {
             blockName?: string | null;
             blockType: 'eventHighlight';
           }
+        | SermonFeedBlock
       )[]
     | null;
   updatedAt?: string | null;
@@ -1607,6 +1660,7 @@ export interface HomepageLayoutSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        'sermon-feed'?: T | SermonFeedBlockSelect<T>;
       };
   updatedAt?: T;
   createdAt?: T;

@@ -1,0 +1,13 @@
+@layer theme, base, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+/* Support Payload's native light/dark toggle toggle */
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+/* Fix common conflicts like Payload table rows collapsing */
+@layer utilities {
+  .table {
+    display: block !important;
+  }
+}
