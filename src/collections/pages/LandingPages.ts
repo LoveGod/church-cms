@@ -2,7 +2,15 @@ import type { CollectionConfig } from 'payload'
 import { isAuthenticated } from '../access/authenticated'
 import { isAdminOrEditor } from '../access/adminOrEditor'
 import { slugField } from 'payload'
-import { Hero, CTA, ScriptureQuote, RichText, SermonHighlight, EventHighlight } from '../../blocks'
+import {
+  Hero,
+  CTA,
+  ScriptureQuote,
+  RichText,
+  SermonHighlight,
+  EventHighlight,
+  SermonFeed,
+} from '../../blocks'
 
 export const LandingPages: CollectionConfig = {
   slug: 'landing-pages',
@@ -63,7 +71,7 @@ export const LandingPages: CollectionConfig = {
               name: 'layout',
               type: 'blocks',
               localized: true,
-              blocks: [CTA, ScriptureQuote, RichText, SermonHighlight, EventHighlight],
+              blocks: [CTA, ScriptureQuote, RichText, SermonHighlight, EventHighlight, SermonFeed],
               required: true,
               admin: {
                 initCollapsed: true,

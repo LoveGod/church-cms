@@ -73,4 +73,7 @@ export default buildConfig({
     defaultLocale: 'en',
     fallback: true,
   },
+  cors: {
+    origins: ['http://localhost:3000'],
+  },
 })
