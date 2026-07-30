@@ -19,6 +19,7 @@ export const Users: CollectionConfig = {
 
     // Define who can read/update users
     admin: (User) => isAdmin(User),
+    admin: (User) => isAdmin(User),
   },
 
   fields: [
@@ -45,6 +46,7 @@ export const Users: CollectionConfig = {
       access: {
         // Only admins can update the role
         read: () => true,
+        update: (User) => isAdmin(User),
         update: (User) => isAdmin(User),
       },
     },
