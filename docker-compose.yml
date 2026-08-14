@@ -1,6 +1,8 @@
 services:
   payload:
-    image: node:20-alpine
+    build:
+      context: .
+      target: base
     ports:
       - '3001:3000'
     volumes:
@@ -21,7 +23,7 @@ services:
     environment:
       #MONGO_INITDB_ROOT_USERNAME: admin
       #MONGO_INITDB_ROOT_PASSWORD: church-cms
-      MONGO_INITDB_DATABASE: church-cms
+      MONGO_INITDB_DATABASE: sermons-discovery-cms
     ports:
       - '27018:27017'
     command:

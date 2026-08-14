@@ -1,14 +1,9 @@
 import type { CollectionConfig } from 'payload'
 import { isAuthenticated } from './access/authenticated'
-import { isAuthenticated } from './access/authenticated'
 import { isAdminOrEditor } from './access/adminOrEditor'
 
 export const Media: CollectionConfig = {
   slug: 'media',
-  admin: {
-    useAsTitle: 'alt',
-    group: 'Media',
-  },
   admin: {
     useAsTitle: 'alt',
     group: 'Media',
@@ -18,16 +13,11 @@ export const Media: CollectionConfig = {
     create: (User) => isAdminOrEditor(User),
     update: (User) => isAdminOrEditor(User),
     delete: (User) => isAdminOrEditor(User),
-    read: (User) => isAuthenticated(User),
-    create: (User) => isAdminOrEditor(User),
-    update: (User) => isAdminOrEditor(User),
-    delete: (User) => isAdminOrEditor(User),
   },
 
   upload: {
     staticDir: 'media',
     adminThumbnail: 'thumbnail',
-    mimeTypes: ['image/*', 'video/*', 'audio/*', 'application/pdf'],
     mimeTypes: ['image/*', 'video/*', 'audio/*', 'application/pdf'],
     imageSizes: [
       {
@@ -72,25 +62,6 @@ export const Media: CollectionConfig = {
       type: 'text',
       localized: true,
     },
-
-    {
-      name: 'focusKeyword',
-      type: 'text',
-      localized: true,
-      localized: true,
-    },
-    {
-      name: 'caption',
-      type: 'textarea',
-      localized: true,
-    },
-
-    {
-      name: 'credit',
-      type: 'text',
-      localized: true,
-    },
-
     {
       name: 'focusKeyword',
       type: 'text',

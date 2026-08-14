@@ -32,7 +32,7 @@ To do so, follow these steps:
 
 - Modify the `MONGODB_URL` in your `.env` file to `mongodb://127.0.0.1/<dbname>`
 - Modify the `docker-compose.yml` file's `MONGODB_URL` to match the above `<dbname>`
-- Run `docker-compose up` to start the database, optionally pass `-d` to run in the background.
+- Run `docker compose up` to start the database, optionally pass `-d` to run in the background.
 
 ## How it works
 
